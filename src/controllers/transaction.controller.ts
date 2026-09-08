@@ -1,13 +1,12 @@
-import express, {Request, Response} from "express";
+import {Request, Response} from "express";
 import { getTransactionByAccount, processTransaction } from "../services/ledger.service";
 import { TransactionSchema } from "../schemas/transaction.schema";
-
 import { ZodError } from "zod";
 import { fetchTransactionGif } from "../services/media.service";
+import { catchAsync } from "../utils/catchAsync";
 
-const incomingTransaction = async (req: Request, res: Response) => {
+const incomingTransaction = catchAsync(async (req: Request, res: Response) => {
 
-    try{
         const data = TransactionSchema.parse(req.body);
     
         const result = await processTransaction(data);
@@ -21,25 +20,10 @@ const incomingTransaction = async (req: Request, res: Response) => {
             media: gifUrl,
             data: result
         })
-    }
+})
 
-    catch(error: any){
-        if (error instanceof ZodError) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Invalid data',
-                issues: error.issues
-            });
-        }
-        return res.status(500).json({
-            status: 'error',
-            message: error.message || 'Internal Error'
-        });
-    }
-}
+const fetchAccountHistory = catchAsync(async (req: Request, res: Response) => {
 
-const fetchAccountHistory = async (req: Request, res: Response) => {
-    try{
         const {accountId} = req.query;
 
         if(!accountId || typeof accountId !== 'string'){
@@ -55,14 +39,7 @@ const fetchAccountHistory = async (req: Request, res: Response) => {
             count: transaction.length,
             data: transaction
         });
-    }
-    catch(error: any){
-        return res.status(500).json({
-            status: 'error',
-            message: error.message || 'Internal server error'
-        })
-    }
-}
+});
 
 export{
     incomingTransaction,

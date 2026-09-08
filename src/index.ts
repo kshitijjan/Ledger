@@ -3,6 +3,7 @@ import express, {Request, Response} from 'express';
 import { incomingTransaction, fetchAccountHistory } from './controllers/transaction.controller';
 import { validateApiKey } from './middleware/security.middleware';
 import { connectDB } from './config/db';
+import { globalErrorHandler } from './middleware/error.middleware';
 
 
 const app = express();
@@ -20,6 +21,8 @@ app.get('/api/healthy', (req: Request, res: Response) => {
 app.post('/api/transaction', validateApiKey, incomingTransaction)
 
 app.get('/api/transactions', validateApiKey, fetchAccountHistory)
+
+app.use(globalErrorHandler);
 
 const startServer = async () => {
     await connectDB();
