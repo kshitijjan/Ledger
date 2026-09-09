@@ -1,7 +1,6 @@
 import {Request, Response} from "express";
 import { getTransactionByAccount, processTransaction } from "../services/ledger.service";
 import { TransactionSchema } from "../schemas/transaction.schema";
-import { ZodError } from "zod";
 import { fetchTransactionGif } from "../services/media.service";
 import { catchAsync } from "../utils/catchAsync";
 
