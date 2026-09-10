@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from 'express';
 import jwt from 'jsonwebtoken';
 
 interface AuthRequest extends Request {
-    user? : {userId: String}
+    user? : {userId: string}
 }
 
 const requireAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -34,5 +34,6 @@ const requireAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
 }
 
 export{
-    requireAuth
+    requireAuth,
+    AuthRequest
 }

@@ -1,6 +1,6 @@
 
 import express, {Request, Response} from 'express';
-import { incomingTransaction, fetchAccountHistory } from './controllers/transaction.controller';
+import { incomingTransaction, fetchMyHistory } from './controllers/transaction.controller';
 import { connectDB } from './config/db';
 import { globalErrorHandler } from './middleware/error.middleware';
 import { register } from './controllers/auth.controller';
@@ -21,7 +21,7 @@ app.get('/api/healthy', (req: Request, res: Response) => {
 
 app.post('/api/transaction', requireAuth, incomingTransaction)
 
-app.get('/api/transactions', requireAuth, fetchAccountHistory)
+app.get('/api/transactions/me', requireAuth, fetchMyHistory)
 
 app.post('/api/auth/register', register);
 

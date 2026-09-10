@@ -20,7 +20,7 @@ const registerUser = async (data: AuthPayload) => {
     const token = jwt.sign(
         { userId: user._id },
         process.env.JWT_SECRET as string,
-        {expiresIn: '1h'}
+        {expiresIn: '24h'}
     );
 
     return {

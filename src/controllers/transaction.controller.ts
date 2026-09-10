@@ -1,17 +1,18 @@
 import {Request, Response} from "express";
-import { getTransactionByAccount, processTransaction } from "../services/ledger.service";
+import { getMyTransactionHistory, getTransactionByAccount, processTransaction } from "../services/ledger.service";
 import { TransactionSchema } from "../schemas/transaction.schema";
 import { fetchTransactionGif } from "../services/media.service";
 import { catchAsync } from "../utils/catchAsync";
+import { AuthRequest } from "../middleware/auth.middleware";
 
-const incomingTransaction = catchAsync(async (req: Request, res: Response) => {
+const incomingTransaction = catchAsync(async (req: AuthRequest, res: Response) => {
 
         const data = TransactionSchema.parse(req.body);
-    
-        const result = await processTransaction(data);
+        const userId = req.user!.userId;
+        const result = await processTransaction(data, userId);
 
         const gifUrl = await fetchTransactionGif(data.type);
-        
+            
         res.status(201).json({
             status: 'success',
             message: 'Transaction saved to database successfully',
@@ -40,7 +41,27 @@ const fetchAccountHistory = catchAsync(async (req: Request, res: Response) => {
         });
 });
 
+const fetchMyHistory = catchAsync(async (req: AuthRequest, res: Response) => {
+
+    const userId = req.user!.userId;
+
+    //Pagination
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    const transactions = await getMyTransactionHistory(userId, page, limit);
+
+    res.status(200).json({
+        status: 'success',
+        page: page, 
+        limit: limit,
+        count: transactions.length,
+        data: transactions
+    })
+})
+
 export{
     incomingTransaction,
-    fetchAccountHistory
+    fetchAccountHistory,
+    fetchMyHistory
 }
