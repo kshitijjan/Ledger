@@ -1,5 +1,6 @@
 import {Request, Response, NextFunction} from 'express';
 import { ZodError } from 'zod';
+import { AppError } from '../utils/AppError';
 
 const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     console.error('[Error Caught]:', err.message)
@@ -9,6 +10,12 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
             status: 'error',
             message: 'Invalid payload data',
             issues: err.issues
+        })
+    }
+    if(err instanceof AppError){
+        return res.status(err.statusCode).json({
+            status: 'error',
+            message: err.message
         })
     }
 

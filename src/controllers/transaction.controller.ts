@@ -1,5 +1,5 @@
 import {Request, Response} from "express";
-import { getMyTransactionHistory, getTransactionByAccount, processTransaction } from "../services/ledger.service";
+import { calculateUserBalance, getMyTransactionHistory, getTransactionByAccount, processTransaction } from "../services/ledger.service";
 import { TransactionSchema } from "../schemas/transaction.schema";
 import { fetchTransactionGif } from "../services/media.service";
 import { catchAsync } from "../utils/catchAsync";
@@ -60,8 +60,23 @@ const fetchMyHistory = catchAsync(async (req: AuthRequest, res: Response) => {
     })
 })
 
+const fetchBalace = catchAsync(async (req: AuthRequest, res: Response) => {
+
+    const userId = req.user!.userId;
+    
+    const currentBalance = await calculateUserBalance(userId);
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            balance: currentBalance
+        }
+    })
+})
+
 export{
     incomingTransaction,
     fetchAccountHistory,
-    fetchMyHistory
+    fetchMyHistory,
+    fetchBalace
 }
